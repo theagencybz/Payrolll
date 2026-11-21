@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>The Agency Payroll</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f0f4f8;--surface:#fff;--ink:#0f1c2e;--muted:#5a6b7d;--line:#d5dee8;--primary:#1a5f7a;--primary-fg:#f4fafc;--accent:#e07a3d;--good:#1b7a4e;--warn:#a85a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;min-height:100dvh}
+header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-bottom:1px solid var(--line);background:var(--surface);padding:.7rem 1rem}
+.layout{display:grid}@media(min-width:768px){.layout{grid-template-columns:190px 1fr}}
+nav{display:flex;gap:.2rem;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--surface);padding:.4rem}
+@media(min-width:768px){nav{display:block;min-height:calc(100vh - 52px);border-right:1px solid var(--line);border-bottom:0;padding:.7rem .4rem}}
+nav a{display:flex;align-items:center;min-height:44px;border-radius:.5rem;padding:0 .7rem;text-decoration:none;color:var(--ink);font-size:.8rem;white-space:nowrap}
+nav a.active{background:var(--primary);color:var(--primary-fg)}
+main{padding:1rem}@media(min-width:768px){main{padding:1.25rem 1.6rem}}
+h1{font-family:Fraunces,Georgia,serif;font-size:1.55rem;margin:0}
+h2{font-size:.95rem;margin:0 0 .4rem;font-weight:600}
+.lede{margin:.15rem 0 0;font-size:.8rem;color:var(--muted);max-width:46rem}
+.content{margin-top:1rem}
+.grid3{display:grid;gap:.55rem}@media(min-width:640px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.tile,.card{border:1px solid var(--line);background:var(--surface);border-radius:.8rem;padding:.85rem}
+.tile .label{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tile .value{margin-top:.15rem;font-family:Fraunces,Georgia,serif;font-size:1.45rem}
+.muted{color:var(--muted);font-size:.78rem}.warn{color:var(--warn)}.good{color:var(--good)}
+.btn{min-height:44px;border-radius:.5rem;padding:0 .85rem;font-size:.8rem;font-weight:600;border:0;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--primary);color:var(--primary-fg)}.btn-outline{border:1px solid var(--line);background:var(--surface)}
+.btn-accent{background:var(--accent);color:#fff}.btn-good{background:var(--good);color:#fff}
+.btn-sm{min-height:34px;font-size:.72rem;padding:0 .55rem}
+.actions{margin-top:.55rem;display:flex;gap:.4rem;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:.76rem;text-align:left}
+th{color:var(--muted);font-weight:500;padding:.35rem .28rem .35rem 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:.4rem .28rem .4rem 0;border-top:1px solid var(--line);vertical-align:middle}
+tr.total td{font-weight:600;border-top:2px solid var(--ink)}
+input,select,textarea{width:100%;min-height:40px;border-radius:.45rem;border:1px solid var(--line);background:var(--bg);padding:.35rem .5rem;font:inherit;color:var(--ink)}
+textarea{min-height:64px;resize:vertical}
+label.field{display:block;font-size:.74rem;margin-top:.5rem}label.field>span{color:var(--muted);display:block;margin-bottom:.12rem}
+.edit-box{display:grid;gap:.4rem .6rem}@media(min-width:640px){.edit-box{grid-template-columns:1fr 1fr}}
+.chip-row{display:flex;flex-wrap:wrap;gap:.28rem;margin-bottom:.5rem;align-items:center}
+.chip-row button{min-height:36px;border-radius:999px;padding:0 .65rem;font-size:.72rem;border:1px solid var(--line);background:var(--surface);cursor:pointer;font:inherit}
+.chip-row button.active{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.scroll{overflow-x:auto}.note{font-size:.74rem;color:var(--muted);margin-top:.25rem}
+.badge{display:inline-block;border-radius:999px;padding:.1rem .4rem;font-size:.66rem;font-weight:600}
+.badge-h{background:#dbeafe;color:#1d4ed8}.badge-v{background:#dcfce7;color:#15803d}
+.badge-s{background:#fef3c7;color:#b45309}.badge-u{background:#f3e8ff;color:#7e22ce}
+.badge-loan{background:#fef3c7;color:#b45309}
+.modal-bg{position:fixed;inset:0;background:rgba(15,28,46,.5);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50}
+.modal{background:#fff;border-radius:.9rem;max-width:680px;width:100%;max-height:92vh;overflow:auto;padding:1.25rem;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.staff-grid{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.staff-card{border:1px solid var(--line);border-radius:.75rem;padding:1rem .75rem;text-align:center;background:var(--bg);cursor:pointer;min-height:88px}
+.staff-card:hover,.staff-card.selected{border-color:var(--primary);background:#e8f2f6}
+.punch-status{font-size:.72rem;margin-top:.3rem}
+.login-wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:linear-gradient(160deg,#e8f0f4 0%,var(--bg) 45%,#eef2f6 100%)}
+.login-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.5rem;box-shadow:0 12px 40px rgba(15,28,46,.08)}
+.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.role-pick button{min-height:52px;border-radius:.65rem;border:1px solid var(--line);background:var(--bg);font:inherit;font-weight:600;cursor:pointer}
+.role-pick button.active{border-color:var(--primary);background:#e8f2f6;color:var(--primary)}
+.filter-bar{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:flex-end;margin-bottom:.5rem}
+.filter-bar label{font-size:.68rem;color:var(--muted)}
+.filter-bar select{min-height:36px;width:auto;min-width:6rem}
+.hrs-input{width:3.6rem;min-height:34px;text-align:center;padding:0 .25rem}
+.cell-h{background:#dbeafe;color:#1d4ed8;font-weight:700}.cell-v{background:#dcfce7;color:#15803d;font-weight:700}
+.cell-s{background:#fef3c7;color:#b45309;font-weight:700}.cell-u{background:#f3e8ff;color:#7e22ce;font-weight:700}
+.loan-box,.raise-box{background:#f8fafc;border:1px dashed var(--line);border-radius:.65rem;padding:.75rem}
+.payslip-brand{font-size:1.6rem;font-weight:700;letter-spacing:.08em;color:#b0b0b0;margin:0}
+.mini{font-size:.72rem}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const DEMO_MANAGER={email:"manager@agency.bz",password:"manager123"};
+const DEMO_STAFF={email:"staff@agency.bz",password:"staff123"};
+const SSB_BANDS=[
+  {min:0.01,max:69.99,ee:1.03,er:4.47},{min:70,max:109.99,ee:1.69,er:7.31},
+  {min:110,max:139.99,ee:2.44,er:10.56},{min:140,max:179.99,ee:3.94,er:12.06},
+  {min:180,max:219.99,ee:5.94,er:14.06},{min:220,max:259.99,ee:7.94,er:16.06},
+  {min:260,max:299.99,ee:9.94,er:18.06},{min:300,max:339.99,ee:11.94,er:20.06},
+  {min:340,max:379.99,ee:13.98,er:22.02},{min:380,max:419.99,ee:16.15,er:23.85},
+  {min:420,max:459.99,ee:18.45,er:25.55},{min:460,max:499.99,ee:20.86,er:27.14},
+  {min:500,max:1e12,ee:23.4,er:28.6},
+];
+const PAYE_WEEKLY=+(29000/52).toFixed(2);
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS=["mon","tue","wed","thu","fri","sat","sun"];
+const DAYL=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+let session=null, loginRole="manager";
+let companies=[
+  {id:"agency",name:"The Agency",businessNumber:"003B1084",employerNumber:"00GE20044"},
+  {id:"studio",name:"Studio",businessNumber:"",employerNumber:""},
+];
+let employees=[
+  {id:105,first:"Abraham",last:"Tun",pos:"Account Rep",company:"agency",active:true,ssn:"000100105",
+    loanGiven:0,loanWeek:0,hire:"2024-01-15",email:"abraham@agency.bz",
+    rates:[{rate:12,from:"2024-01-15",to:""}],vacBalance:10,sickBalance:16},
+  {id:106,first:"Erick",last:"Santos",pos:"Lead Designer",company:"agency",active:true,ssn:"000100106",
+    loanGiven:0,loanWeek:0,hire:"2023-06-01",email:"erick@agency.bz",
+    rates:[{rate:10,from:"2023-06-01",to:"2026-12-31"},{rate:11,from:"2027-01-01",to:""}],vacBalance:8,sickBalance:14},
+  {id:108,first:"Trisha",last:"Garcia",pos:"Graphic Designer",company:"agency",active:true,ssn:"000329312",
+    loanGiven:0,loanWeek:0,hire:"2022-03-10",email:"trisha@agency.bz",
+    rates:[{rate:8.5,from:"2022-03-10",to:""}],vacBalance:12,sickBalance:16},
+  {id:110,first:"Veronica",last:"Vellos",pos:"Cleaner",company:"agency",active:true,ssn:"000333546",
+    loanGiven:0,loanWeek:0,hire:"2021-11-01",email:"veronica@agency.bz",
+    rates:[{rate:10,from:"2021-11-01",to:""}],vacBalance:5,sickBalance:10},
+  {id:109,first:"Georgina",last:"Leiva",pos:"Video Editor",company:"studio",active:true,ssn:"000100109",
+    loanGiven:0,loanWeek:0,hire:"2024-08-01",email:"georgina@studio.bz",
+    rates:[{rate:7.5,from:"2024-08-01",to:""}],vacBalance:6,sickBalance:16},
+  {id:112,first:"Roberto",last:"Beltran",pos:"Video Editor",company:"studio",active:true,ssn:"000100112",
+    loanGiven:0,loanWeek:0,hire:"2025-01-06",email:"roberto@studio.bz",
+    rates:[{rate:7.5,from:"2025-01-06",to:""}],vacBalance:3,sickBalance:16},
+  {id:113,first:"Priscilla",last:"Acosta",pos:"Video Editor",company:"studio",active:true,ssn:"000173167",
+    loanGiven:300,loanWeek:25,hire:"2023-02-14",email:"priscilla@studio.bz",
+    rates:[{rate:7.5,from:"2023-02-14",to:""}],vacBalance:9,sickBalance:12},
+];
+let timeCards={
+  "2027-01-04":{
+    105:{mon:8,tue:8,wed:"H",thu:8,fri:8,sat:0,sun:0,notes:""},
+    106:{mon:8,tue:8,wed:"H",thu:8,fri:8,sat:0,sun:0,notes:""},
+    108:{mon:8,tue:7,wed:"H",thu:8,fri:"V",sat:0,sun:0,notes:"Vacation Fri"},
+    110:{mon:4,tue:3,wed:"H",thu:3,fri:4,sat:0,sun:0,notes:""},
+    109:{mon:6,tue:6,wed:"H",thu:6,fri:6,sat:0,sun:0,notes:""},
+    112:{mon:8,tue:8,wed:"H",thu:8,fri:8,sat:0,sun:0,notes:""},
+    113:{mon:3,tue:3,wed:"H",thu:3,fri:"S",sat:0,sun:0,notes:"Sick Friday"},
+  },
+  "2027-01-11":{
+    105:{mon:8,tue:8,wed:8,thu:8,fri:8,sat:0,sun:0,notes:""},
+    106:{mon:8,tue:8,wed:8,thu:8,fri:8,sat:0,sun:0,notes:""},
+    108:{mon:8,tue:8,wed:5.5,thu:8,fri:6,sat:0,sun:0,notes:""},
+    110:{mon:3,tue:3,wed:4,thu:3,fri:2,sat:0,sun:0,notes:""},
+    109:{mon:6,tue:6,wed:6,thu:6,fri:0,sat:0,sun:0,notes:""},
+    112:{mon:8,tue:8,wed:8,thu:8,fri:8,sat:0,sun:0,notes:""},
+    113:{mon:3,tue:3,wed:3,thu:3,fri:0,sat:0,sun:0,notes:""},
+  },
+  "2027-01-18":{
+    105:{mon:8,tue:0,wed:0,thu:0,fri:0,sat:0,sun:0,notes:""},
+    106:{mon:8,tue:0,wed:0,thu:0,fri:0,sat:0,sun:0,notes:""},
+  },
+};
+let punches={};
+let settings={stdHours:45,stdDayHours:8};
+let page="today", editing=null, payYear=2027, payMonth=0, payWeek="2027-01-04", payCompany="all", companyFilter="all", clockPick=null;
+
+function money(n){if(n==null||n==="")return "—";return new Intl.NumberFormat("en-BZ",{style:"currency",currency:"BZD"}).format(+n)}
+function nm(e){return e.first+" "+e.last}
+function coName(id){const c=companies.find(x=>x.id===id);return c?c.name:id}
+function addDays(iso,n){const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function weekEnd(s){return addDays(s,6)}
+function fmtWeek(iso){const a=new Date(iso+"T12:00:00"),b=new Date(weekEnd(iso)+"T12:00:00");return a.getDate()+"–"+b.getDate()+" "+a.toLocaleDateString("en-GB",{month:"short"})}
+function rateOn(emp,w){let r=0;for(const row of (emp.rates||[])){if(w>=row.from&&(!row.to||w<=row.to))r=row.rate;}return r||emp.rate||0}
+function weeksInMonth(y,m){
+  const first=new Date(y,m,1),last=new Date(y,m+1,0),weeks=[],c=new Date(first);
+  const day=c.getDay();c.setDate(c.getDate()+(day===0?-6:1-day));
+  while(c<=last){const iso=c.toISOString().slice(0,10);if(new Date(addDays(iso,6)+"T12:00:00")>=first)weeks.push(iso);c.setDate(c.getDate()+7)}
+  return weeks;
+}
+function ensureWeek(){const w=weeksInMonth(payYear,payMonth);if(!w.includes(payWeek))payWeek=w.find(x=>timeCards[x])||w[0]||payWeek;return w}
+function pairWeek(ws){const w=weeksInMonth(payYear,payMonth);const i=w.indexOf(ws);if(i<0)return[ws];if(i%2===0)return[w[i],w[i+1]].filter(Boolean);return[w[i-1],w[i]].filter(Boolean)}
+
+function weekSummary(empId, weekStart){
+  const card=(timeCards[weekStart]&&timeCards[weekStart][empId])||{};
+  let worked=0, hol=0, vac=0, sick=0, unpaid=0, labels=[];
+  DAYS.forEach((d,i)=>{
+    const v=card[d];
+    if(v==null||v===""||v===0) return;
+    if(v==="H"){ hol+=settings.stdDayHours; labels.push(DAYL[i]+" H"); }
+    else if(v==="V"){ vac+=settings.stdDayHours; labels.push(DAYL[i]+" V"); }
+    else if(v==="S"){ sick+=settings.stdDayHours; labels.push(DAYL[i]+" S"); }
+    else if(v==="U"){ unpaid+=settings.stdDayHours; labels.push(DAYL[i]+" U"); }
+    else { worked+=Number(v)||0; }
+  });
+  const leavePaid=hol+vac+sick;
+  return {worked,hol,vac,sick,unpaid,leavePaid,labels,totalPaidHours:worked+leavePaid,notes:card.notes||""};
+}
+function ssbFor(gross){if(gross<=0)return{ee:0,er:0,total:0};const b=SSB_BANDS.find(x=>gross>=x.min&&gross<=x.max)||SSB_BANDS[SSB_BANDS.length-1];return{ee:b.ee,er:b.er,total:+(b.ee+b.er).toFixed(2)}}
+function payeFor(g){if(g<=PAYE_WEEKLY)return 0;const annual=g*52;if(annual<=29000)return 0;let t=Math.max(0,annual-20000)*0.25;if(annual<=32000)t=Math.min(t,annual-29000);return Math.round(t/52*100)/100}
+function payslip(emp, weekStart){
+  const rate=rateOn(emp, weekStart);
+  const sum=weekSummary(emp.id, weekStart);
+  const hours=sum.totalPaidHours;
+  const gross=+(hours*rate).toFixed(2);
+  const ssb=ssbFor(gross);
+  const paye=payeFor(gross);
+  const loan=(emp.loanWeek>0&&gross>0)?+emp.loanWeek:0;
+  const net=+(gross-ssb.ee-paye-loan).toFixed(2);
+  return {rate,hours,...sum,gross,ssb,paye,loan,net};
+}
+
+function doLogin(){
+  const email=(document.getElementById("login-email").value||"").trim().toLowerCase();
+  const password=document.getElementById("login-pass").value||"";
+  const err=document.getElementById("login-err"); err.textContent="";
+  if(loginRole==="manager"&&(email===DEMO_MANAGER.email||email==="manager")&&(password===DEMO_MANAGER.password||password==="manager123")){
+    session={role:"manager",email:DEMO_MANAGER.email}; page="today"; render(); return;
+  }
+  if(loginRole==="staff"&&(email===DEMO_STAFF.email||email==="staff"||email==="")&&(password===DEMO_STAFF.password||password==="staff123"||password==="")){
+    session={role:"staff",email:DEMO_STAFF.email}; page="clock"; render(); return;
+  }
+  err.textContent="Wrong email or password";
+}
+function logout(){session=null;punches={};render()}
+function go(p){if(session&&session.role==="staff"){page="clock";render();return;}page=p;editing=null;clockPick=null;closeModal();render()}
+function closeModal(){const m=document.getElementById("modal-root");if(m)m.innerHTML=""}
+
+function viewLogin(){
+  return '<div class="login-wrap"><div class="login-card">'+
+    '<h1 style="font-family:Fraunces,Georgia,serif;margin:0;text-align:center">The Agency</h1>'+
+    '<p class="lede" style="text-align:center;margin:.35rem 0 1rem">Sign in</p>'+
+    '<div class="role-pick"><button type="button" class="'+(loginRole==="manager"?"active":"")+'" onclick="loginRole=\'manager\';render()">Manager</button>'+
+    '<button type="button" class="'+(loginRole==="staff"?"active":"")+'" onclick="loginRole=\'staff\';render()">Staff punch</button></div>'+
+    '<label class="field"><span>Email</span><input id="login-email" value="'+(loginRole==="manager"?DEMO_MANAGER.email:DEMO_STAFF.email)+'"/></label>'+
+    '<label class="field"><span>Password</span><input id="login-pass" type="password" value="'+(loginRole==="manager"?"manager123":"staff123")+'"/></label>'+
+    '<p id="login-err" class="warn" style="min-height:1.2em;font-size:.8rem"></p>'+
+    '<button class="btn btn-primary" style="width:100%;margin-top:.5rem" onclick="doLogin()">Sign in</button></div></div>';
+}
+function navHtml(){
+  if(session.role==="staff") return '<a href="#" class="active">Time clock</a><a href="#" onclick="logout();return false" style="color:var(--muted)">Sign out</a>';
+  return [{id:"today",label:"Today"},{id:"clock",label:"Time clock"},{id:"timesheet",label:"Timecards"},{id:"payroll",label:"Pay period"},{id:"employees",label:"People"},{id:"settings",label:"Settings"}]
+    .map(i=>'<a href="#" class="'+(page===i.id?"active":"")+'" onclick="go(\''+i.id+'\');return false">'+i.label+'</a>').join("")+
+    '<a href="#" onclick="logout();return false" style="margin-top:.75rem;color:var(--muted)">Sign out</a>';
+}
+
+function viewToday(){
+  const on=Object.keys(punches).filter(id=>punches[id]&&punches[id].in);
+  const withLoan=employees.filter(e=>e.active&&e.loanWeek>0);
+  return '<h1>Today</h1><div class="content"><div class="grid3">'+
+    '<div class="tile"><div class="label">On the clock</div><div class="value">'+on.length+'</div></div>'+
+    '<div class="tile"><div class="label">Active staff</div><div class="value">'+employees.filter(e=>e.active).length+'</div></div>'+
+    '<div class="tile"><div class="label">Active loans</div><div class="value">'+withLoan.length+'</div></div></div>'+
+    (withLoan.length?'<div class="card" style="margin-top:.75rem"><h2>Loans</h2>'+withLoan.map(e=>'<p class="note" style="margin:.25rem 0"><strong>'+nm(e)+'</strong> — given '+money(e.loanGiven)+' · deduct '+money(e.loanWeek)+'/wk</p>').join('')+'</div>':'')+
+    '<div class="actions"><button class="btn btn-primary" onclick="go(\'payroll\')">Pay period</button>'+
+    '<button class="btn btn-outline" onclick="go(\'employees\')">People</button></div></div>';
+}
+
+function viewClock(){
+  const list=employees.filter(e=>e.active);
+  const cards=list.map(e=>{
+    const p=punches[e.id]; const on=p&&p.in; const sel=clockPick===e.id;
+    return '<div class="staff-card'+(sel?' selected':'')+'" onclick="clockPick='+e.id+';render()">'+
+      '<strong>'+e.first+'</strong><div class="muted">'+e.last+'</div>'+
+      '<div class="punch-status '+(on?'good':'muted')+'">'+(on?'In · '+p.in:'Tap')+'</div></div>';
+  }).join("");
+  const sel=employees.find(e=>e.id===clockPick);
+  let actions='';
+  if(sel){const on=punches[sel.id]&&punches[sel.id].in;
+    actions='<div class="card" style="margin-top:.75rem"><p style="margin:0 0 .5rem"><strong>'+nm(sel)+'</strong></p><div class="actions">'+
+      (on?'<button class="btn btn-accent" style="flex:1" onclick="doPunchOut('+sel.id+')">Clock out</button>':
+          '<button class="btn btn-good" style="flex:1" onclick="doPunchIn('+sel.id+')">Clock in</button>')+'</div></div>';
+  }
+  return '<h1>Time clock</h1><p class="lede">'+(session.role==="staff"?"Punch only — tap your name.":"Staff kiosk.")+'</p><div class="content"><div class="staff-grid">'+cards+'</div>'+actions+'</div>';
+}
+function doPunchIn(id){const t=new Date();punches[id]={in:String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0")};render()}
+function doPunchOut(id){delete punches[id];render()}
+
+function cellClass(v){if(v==="H")return"cell-h";if(v==="V")return"cell-v";if(v==="S")return"cell-s";if(v==="U")return"cell-u";return""}
+function viewTimesheet(){
+  const weeks=ensureWeek();
+  const list=employees.filter(e=>e.active&&(payCompany==="all"||e.company===payCompany));
+  let filters='<div class="filter-bar">'+
+    '<div><label>Year</label><br/><select onchange="payYear=+this.value;render()">'+[2026,2027].map(y=>'<option value="'+y+'"'+(payYear===y?' selected':'')+'>'+y+'</option>').join('')+'</select></div>'+
+    '<div><label>Month</label><br/><select onchange="payMonth=+this.value;render()">'+MONTHS.map((m,i)=>'<option value="'+i+'"'+(payMonth===i?' selected':'')+'>'+m+'</option>').join('')+'</select></div>'+
+    '<div><label>Company</label><br/><select onchange="payCompany=this.value;render()"><option value="all">All</option>'+companies.map(c=>'<option value="'+c.id+'"'+(payCompany===c.id?' selected':'')+'>'+c.name+'</option>').join('')+'</select></div></div>';
+  let chips='<div class="chip-row">';weeks.forEach(w=>chips+='<button class="'+(payWeek===w?'active':'')+'" onclick="payWeek=\''+w+'\';render()">'+fmtWeek(w)+'</button>');chips+='</div>';
+  let body='<p class="note"><span class="badge badge-h">H</span> holiday · <span class="badge badge-v">V</span> vacation · <span class="badge badge-s">S</span> sick · <span class="badge badge-u">U</span> unpaid · or type hours</p>';
+  body+='<div class="card scroll"><table><thead><tr><th>Name</th>'+DAYL.map(d=>'<th>'+d+'</th>').join('')+'<th>Work</th><th>Leave</th><th></th></tr></thead><tbody>';
+  list.forEach(e=>{
+    if(!timeCards[payWeek]) timeCards[payWeek]={};
+    if(!timeCards[payWeek][e.id]) timeCards[payWeek][e.id]={mon:0,tue:0,wed:0,thu:0,fri:0,sat:0,sun:0,notes:""};
+    const sum=weekSummary(e.id,payWeek);
+    body+='<tr><td><strong>'+e.first+'</strong> <span class="muted">'+e.last.charAt(0)+'.</span></td>';
+    DAYS.forEach(d=>{const v=timeCards[payWeek][e.id][d]; const show=(v===0||v==null)?"":v;
+      body+='<td><input class="hrs-input '+cellClass(v)+'" value="'+show+'" onchange="setDay('+e.id+',\''+payWeek+'\',\''+d+'\',this.value)"/></td>';});
+    body+='<td>'+sum.worked+'</td><td>'+sum.leavePaid+'</td><td><button class="btn btn-outline btn-sm" onclick="openDayEditor('+e.id+')">Edit</button></td></tr>';
+  });
+  body+='</tbody></table></div>';
+  return '<h1>Timecards</h1><p class="lede">S = paid sick. Type 3, 6, 8 or codes.</p><div class="content">'+filters+chips+body+'</div>';
+}
+function setDay(empId,week,day,val){
+  if(!timeCards[week]) timeCards[week]={};
+  if(!timeCards[week][empId]) timeCards[week][empId]={mon:0,tue:0,wed:0,thu:0,fri:0,sat:0,sun:0,notes:""};
+  const t=String(val).trim().toUpperCase();
+  if(t==="H"||t==="V"||t==="S"||t==="U") timeCards[week][empId][day]=t;
+  else if(t===""||t==="0") timeCards[week][empId][day]=0;
+  else {const n=Number(t); timeCards[week][empId][day]=isNaN(n)?0:Math.max(0,Math.min(24,n));}
+  render();
+}
+function openDayEditor(empId){
+  const e=employees.find(x=>x.id===empId); if(!e)return;
+  const card=timeCards[payWeek][empId]||{};
+  let rows=DAYS.map((d,i)=>{const v=card[d]; const show=(v===0||v==null)?"":v;
+    return '<label class="field"><span>'+DAYL[i]+'</span><input id="de-'+d+'" value="'+show+'" placeholder="hrs or H V S U"/></label>';}).join('');
+  document.getElementById("modal-root").innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">'+
+    '<h2 style="margin-top:0">'+nm(e)+' · '+fmtWeek(payWeek)+'</h2><div class="edit-box">'+rows+
+    '<label class="field" style="grid-column:1/-1"><span>Notes</span><textarea id="de-notes" rows="2">'+(card.notes||"")+'</textarea></label></div>'+
+    '<div class="actions"><button class="btn btn-primary" onclick="saveDayEditor('+e.id+')">Save</button><button class="btn btn-outline" onclick="closeModal()">Cancel</button></div></div></div>';
+}
+function saveDayEditor(empId){
+  DAYS.forEach(d=>{const el=document.getElementById("de-"+d); if(el) setDay(empId,payWeek,d,el.value)});
+  if(timeCards[payWeek][empId]) timeCards[payWeek][empId].notes=(document.getElementById("de-notes")||{}).value||"";
+  closeModal(); render();
+}
+
+function viewPayroll(){
+  const weeks=ensureWeek();
+  const list=employees.filter(e=>{
+    if(payCompany!=="all"&&e.company!==payCompany) return false;
+    return payslip(e,payWeek).hours>0;
+  });
+  let filters='<div class="filter-bar">'+
+    '<div><label>Year</label><br/><select onchange="payYear=+this.value;render()">'+[2026,2027].map(y=>'<option value="'+y+'"'+(payYear===y?' selected':'')+'>'+y+'</option>').join('')+'</select></div>'+
+    '<div><label>Month</label><br/><select onchange="payMonth=+this.value;render()">'+MONTHS.map((m,i)=>'<option value="'+i+'"'+(payMonth===i?' selected':'')+'>'+m+'</option>').join('')+'</select></div>'+
+    '<div><label>Company</label><br/><select onchange="payCompany=this.value;render()"><option value="all">All</option>'+companies.map(c=>'<option value="'+c.id+'"'+(payCompany===c.id?' selected':'')+'>'+c.name+'</option>').join('')+'</select></div></div>';
+  let chips='<div class="chip-row">';weeks.forEach(w=>chips+='<button class="'+(payWeek===w?'active':'')+'" onclick="payWeek=\''+w+'\';render()">'+fmtWeek(w)+'</button>');chips+='</div>';
+  let body='<p class="note">Board = one week. <strong>Payslip</strong> always shows <strong>both weeks</strong> of the fortnight with hour breakdown.</p>';
+  body+='<div class="card scroll"><table><thead><tr><th>Name</th><th>Hrs</th><th>Gross</th><th>Loan</th><th>Net</th><th></th></tr></thead><tbody>';
+  list.forEach(e=>{const p=payslip(e,payWeek);
+    body+='<tr><td>'+nm(e)+(e.loanWeek>0?' <span class="badge badge-loan">loan</span>':'')+'</td><td>'+p.hours+'</td><td>'+money(p.gross)+'</td><td>'+(p.loan?money(p.loan):"—")+'</td><td><strong>'+money(p.net)+'</strong></td>'+
+      '<td><button class="btn btn-outline btn-sm" onclick="openPayslip('+e.id+',\''+payWeek+'\')">Payslip</button></td></tr>';
+  });
+  body+='</tbody></table></div>';
+  return '<h1>Pay period</h1><p class="lede">Open Payslip for the full 2-week advice.</p><div class="content">'+filters+chips+body+'</div>';
+}
+
+/** 2-week payslip with hour breakdown */
+function openPayslip(empId,ws){
+  const e=employees.find(x=>x.id===empId); if(!e)return;
+  const pair=pairWeek(ws);
+  // Always show both weeks of the pair when data exists; still list empty week as 0 so advice is clearly biweekly
+  const slips=pair.map(w=>({w,p:payslip(e,w)}));
+  const net=slips.reduce((s,x)=>s+x.p.net,0);
+  const gross=slips.reduce((s,x)=>s+x.p.gross,0);
+  const loan=slips.reduce((s,x)=>s+x.p.loan,0);
+  const ssb=slips.reduce((s,x)=>s+x.p.ssb.ee,0);
+  const paye=slips.reduce((s,x)=>s+x.p.paye,0);
+  const tw=slips.reduce((s,x)=>s+x.p.worked,0);
+  const th=slips.reduce((s,x)=>s+x.p.hol,0);
+  const tv=slips.reduce((s,x)=>s+x.p.vac,0);
+  const ts=slips.reduce((s,x)=>s+x.p.sick,0);
+
+  let tables=slips.map((s,i)=>{
+    const p=s.p;
+    return '<div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--line)">'+
+      '<p style="font-weight:600;margin:0 0 .4rem">Week '+(i+1)+' · '+fmtWeek(s.w)+'</p>'+
+      '<table><thead><tr><th>Worked</th><th>Holiday</th><th>Vacation</th><th>Sick</th><th>Total hrs</th><th>Rate</th></tr></thead><tbody><tr>'+
+      '<td>'+p.worked+'</td><td>'+p.hol+'</td><td>'+p.vac+'</td><td>'+p.sick+'</td><td><strong>'+p.hours+'</strong></td><td>'+money(p.rate)+'</td></tr></tbody></table>'+
+      '<table style="margin-top:.35rem"><thead><tr><th>Gross</th><th>SSB</th><th>Loan</th><th>PAYE</th><th>Net</th></tr></thead><tbody><tr>'+
+      '<td>'+money(p.gross)+'</td><td>'+money(p.ssb.ee)+'</td><td>'+money(p.loan)+'</td><td>'+money(p.paye)+'</td><td><strong>'+money(p.net)+'</strong></td></tr></tbody></table>'+
+      (p.labels.length?'<p class="mini muted" style="margin:.25rem 0 0">'+p.labels.join(" · ")+'</p>':'')+
+      '</div>';
+  }).join("");
+
+  document.getElementById("modal-root").innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">'+
+    '<p class="payslip-brand">AGENCY</p><p style="font-size:1.5rem;font-weight:700;margin:0">Payment advice</p></div>'+
+    '<p style="margin:.75rem 0 0"><strong>'+nm(e)+'</strong> · #'+e.id+' · '+e.pos+'</p>'+
+    '<p class="muted">2-week period · '+fmtWeek(pair[0])+(pair[1]?' & '+fmtWeek(pair[1]):'')+'</p>'+
+    '<div class="card" style="margin-top:.75rem;background:#f8fafc">'+
+    '<p style="margin:0;font-size:.8rem"><strong>Hours (both weeks)</strong> — Worked '+tw+' · Holiday '+th+' · Vacation '+tv+' · Sick '+ts+'</p>'+
+    '<p style="margin:.35rem 0 0;font-size:.9rem">2-week net: <strong>'+money(net)+'</strong>'+(loan?' · Loan deducted '+money(loan):'')+'</p></div>'+
+    tables+
+    '<p class="note" style="margin-top:1rem">Gross '+money(gross)+' − SSB '+money(ssb)+' − Loan '+money(loan)+' − PAYE '+money(paye)+' = <strong>Net '+money(net)+'</strong></p>'+
+    (e.loanGiven>0?'<p class="note">Loan record: given '+money(e.loanGiven)+' · weekly deduction '+money(e.loanWeek)+'</p>':'')+
+    '<div class="actions"><button class="btn btn-outline" onclick="closeModal()">Close</button></div></div></div>';
+}
+
+function viewPeople(){
+  const list=employees.filter(e=>e.active&&(companyFilter==="all"||e.company===companyFilter));
+  let chips='<div class="chip-row"><button class="'+(companyFilter==="all"?"active":"")+'" onclick="companyFilter=\'all\';render()">All</button>';
+  companies.forEach(c=>chips+='<button class="'+(companyFilter===c.id?"active":"")+'" onclick="companyFilter=\''+c.id+'\';render()">'+c.name+'</button>');
+  chips+='</div>';
+  const cards=list.map(e=>{
+    const open=editing===e.id; const rate=rateOn(e,payWeek);
+    const hist=(e.rates||[]).map(r=>money(r.rate)+' from '+r.from+(r.to?' to '+r.to:' (current)')).join(' · ');
+    return '<div class="card"><div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap">'+
+      '<div><p style="font-family:Fraunces,Georgia,serif;font-size:1.2rem;margin:0">'+nm(e)+'</p>'+
+      '<p class="muted">'+e.pos+' · '+coName(e.company)+
+      (e.loanWeek>0?' · <span class="badge badge-loan">loan '+money(e.loanWeek)+'/wk</span>':'')+'</p>'+
+      '<p class="mini muted">Rates: '+hist+'</p></div>'+
+      '<p style="font-family:Fraunces,Georgia,serif;font-size:1.4rem;margin:0">'+money(rate)+'<span class="muted" style="font-size:.85rem">/hr</span></p></div>'+
+      '<div class="actions"><button class="btn '+(open?"btn-outline":"btn-primary")+'" onclick="editing='+(open?"null":e.id)+';render()">'+(open?"Close":"Edit")+'</button></div>'+
+      (open?editForm(e):'')+'</div>';
+  }).join("");
+  return '<h1>People</h1><p class="lede">Raises and loans are both on Edit.</p><div class="content">'+chips+cards+'</div>';
+}
+function editForm(e){
+  const rate=rateOn(e,payWeek);
+  const hist=(e.rates||[]).map(r=>'<li class="muted">'+money(r.rate)+' from '+r.from+(r.to?' → '+r.to:' (current)')+'</li>').join('');
+  return '<div class="edit-box" style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line)">'+
+    '<label class="field"><span>First</span><input id="f-first" value="'+e.first+'"/></label>'+
+    '<label class="field"><span>Last</span><input id="f-last" value="'+e.last+'"/></label>'+
+    '<label class="field"><span>Email</span><input id="f-email" value="'+(e.email||"")+'"/></label>'+
+    '<div style="grid-column:1/-1"></div>'+
+    '<div class="raise-box" style="grid-column:1/-1">'+
+    '<strong style="font-size:.85rem">Give a raise</strong>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.35rem">'+
+    '<label class="field" style="margin:0"><span>New hourly rate</span><input id="f-rate" type="number" step="0.25" value="'+rate+'"/></label>'+
+    '<label class="field" style="margin:0"><span>Starts on</span><input id="f-rate-from" type="date" value="'+payWeek+'"/></label></div>'+
+    '<p class="note" style="margin:.35rem 0 0">Leave rate unchanged to skip a raise. History:</p><ul style="margin:.2rem 0 0;padding-left:1.1rem">'+hist+'</ul></div>'+
+    '<div class="loan-box" style="grid-column:1/-1">'+
+    '<strong style="font-size:.85rem">Loan</strong>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.35rem">'+
+    '<label class="field" style="margin:0"><span>Amount given (total)</span><input id="f-loan-given" type="number" min="0" step="1" value="'+(e.loanGiven||0)+'" placeholder="e.g. 300"/></label>'+
+    '<label class="field" style="margin:0"><span>Deduct each week ($)</span><input id="f-loan-week" type="number" min="0" step="1" value="'+(e.loanWeek||0)+'"/></label></div>'+
+    '<p class="note" style="margin:.35rem 0 0"><strong>Amount given</strong> = what you handed them (record only, e.g. $300). <strong>Deduct each week</strong> = what comes off pay (e.g. $25). Set deduct to <strong>0</strong> when finished.</p></div>'+
+    '<div style="grid-column:1/-1"><button class="btn btn-primary" onclick="saveEmp('+e.id+')">Save</button></div></div>';
+}
+function saveEmp(id){
+  const e=employees.find(x=>x.id===id); if(!e)return;
+  e.first=document.getElementById("f-first").value.trim()||e.first;
+  e.last=document.getElementById("f-last").value.trim()||e.last;
+  e.email=document.getElementById("f-email").value.trim();
+  e.loanGiven=Math.max(0,Number(document.getElementById("f-loan-given").value)||0);
+  e.loanWeek=Math.max(0,Number(document.getElementById("f-loan-week").value)||0);
+  const newRate=Math.max(0,Number(document.getElementById("f-rate").value)||0);
+  const from=document.getElementById("f-rate-from").value||payWeek;
+  if(newRate!==rateOn(e,from)){
+    if(!e.rates) e.rates=[];
+    e.rates.forEach(r=>{if(!r.to&&r.from<from){const d=new Date(from+"T12:00:00");d.setDate(d.getDate()-1);r.to=d.toISOString().slice(0,10)}});
+    e.rates.push({rate:newRate,from,to:""});
+  }
+  editing=null; render();
+}
+
+function viewSettings(){
+  return '<h1>Settings</h1><div class="content card" style="max-width:28rem">'+
+    '<label class="field"><span>Standard day hours (H / V / S)</span><input type="number" value="'+settings.stdDayHours+'" onchange="settings.stdDayHours=+this.value||8"/></label>'+
+    '<p class="note">Full holiday, vacation, or sick day = this many paid hours.</p></div>';
+}
+
+function render(){
+  const root=document.getElementById("app");
+  if(!session){root.innerHTML=viewLogin();return;}
+  if(session.role==="staff") page="clock";
+  const map={today:viewToday,clock:viewClock,timesheet:viewTimesheet,payroll:viewPayroll,employees:viewPeople,settings:viewSettings};
+  root.innerHTML='<div><header><div><p style="font-family:Fraunces,Georgia,serif;font-size:1.1rem;margin:0">The Agency</p>'+
+    '<p class="muted" style="font-size:.68rem;margin:.1rem 0 0">'+(session.role==="staff"?"Staff punch":"Manager")+'</p></div>'+
+    '<button class="btn btn-outline btn-sm" onclick="logout()">Sign out</button></header>'+
+    '<div class="layout"><nav>'+navHtml()+'</nav><main>'+(map[page]||viewToday)()+'</main></div></div><div id="modal-root"></div>';
+}
+render();
+</script>
+</body>
+</html>
